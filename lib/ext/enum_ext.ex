@@ -51,4 +51,16 @@ defmodule Tesseract.Ext.EnumExt do
         end
     end
   end
+
+  # Groups values into multiple groups, based on the list of keys returned by keys_fn.
+  def multigroup_by(enum, keys_fn, value_fn \\ fn x -> x end) do
+    enum
+    |> Enum.reduce(%{}, fn e, result ->
+      keys_fn.(e)
+      |> Enum.reduce(result, fn k, result ->
+        group = result |> Map.get(k, [])
+        Map.put(result, k, [value_fn.(e) | group])
+      end)
+    end)
+  end
 end
